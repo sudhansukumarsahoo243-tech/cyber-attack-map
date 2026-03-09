@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Live Cyber Attack Map</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+</head>
+
+<body>
+
+<h2>Live Cyber Attack Map</h2>
+
+<div id="map" style="height:500px"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+var map = L.map('map').setView([20,0],2)
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map)
+
+function loadAttack(){
+
+fetch("/api")
+.then(res => res.json())
+.then(data => {
+
+var loc = data.loc.split(",")
+
+var marker = L.marker([loc[0],loc[1]]).addTo(map)
+
+marker.bindPopup("Malicious IP: " + data.ip)
+
+})
+
+}
+
+setInterval(loadAttack,5000)
+
+</script>
+
+</body>
+
+</html>
