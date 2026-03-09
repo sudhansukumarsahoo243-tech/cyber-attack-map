@@ -24,4 +24,6 @@ L.marker([coords[0],coords[1]])
 
 })
 
+document.getElementById("count").innerText = data.data.length
+
 })
