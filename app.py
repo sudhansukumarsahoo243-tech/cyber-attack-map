@@ -1,28 +1,36 @@
 from flask import Flask, render_template, jsonify
 import requests
-import random
 
 app = Flask(__name__)
 
-# Example malicious IPs
-ips = [
-"185.143.223.12",
-"103.21.244.0",
-"45.33.32.156",
-"8.8.8.8"
-]
+API_KEY = "ff3256c3294307966e182d60b39f4398db746b3cc0da659897a5066f3a3b0428d2ca6fdacc48b493"
+
+# Get malicious IP list
+def get_attacks():
+
+    url = "https://api.abuseipdb.com/api/v2/blacklist"
+
+    headers = {
+        "Key": API_KEY,
+        "Accept": "application/json"
+    }
+
+    params = {
+        "confidenceMinimum": 90
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    return response.json()
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/api")
-def api():
+@app.route("/attacks")
+def attacks():
 
-    ip = random.choice(ips)
-
-    url = f"https://ipinfo.io/{ip}/json"
-    data = requests.get(url).json()
+    data = get_attacks()
 
     return jsonify(data)
 
