@@ -22,32 +22,34 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <script>
 
-var map = L.map('map').setView([20,0],2)
+var map = L.map('map').setView([20,0],2);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-).addTo(map)
+).addTo(map);
 
-function loadAttack(){
-
-fetch("/api")
+fetch("/attacks")
 .then(res => res.json())
 .then(data => {
 
-var loc = data.loc.split(",")
+    data.data.slice(0,20).forEach(ip => {
 
-var marker = L.marker([loc[0],loc[1]]).addTo(map)
+        fetch("https://ipinfo.io/" + ip.ipAddress + "/json")
+        .then(res => res.json())
+        .then(loc => {
 
-marker.bindPopup("Malicious IP: " + data.ip)
+            if(!loc.loc) return;
+
+            var coords = loc.loc.split(",")
+
+            L.marker([coords[0],coords[1]])
+            .addTo(map)
+            .bindPopup("Attacker IP: " + ip.ipAddress)
+
+        })
+
+    })
+
+    document.getElementById("count").innerText = data.data.length
 
 })
-
-}
-
-setInterval(loadAttack,5000)
-
-</script>
-
-</body>
-
-</html>
